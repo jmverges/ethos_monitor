@@ -26,9 +26,9 @@ gRigName = commands.getstatusoutput("cat /etc/hostname")[1]
  
 def DumpActivity(dumpStr):
   print dumpStr
-    pLogFile = open(gLogFile, "a")
-    pLogFile.write("%s @ %s\n" % (dumpStr, str(datetime.datetime.now())))
-    pLogFile.close()
+  pLogFile = open(gLogFile, "a")
+  pLogFile.write("%s @ %s\n" % (dumpStr, str(datetime.datetime.now())))
+  pLogFile.close()
  
  
 # wait till 3 minutes runtime, so we can be sure that mining did start
