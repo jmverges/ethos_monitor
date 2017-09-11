@@ -41,12 +41,18 @@ while 1:
   numGpus = int(commands.getstatusoutput("cat /var/run/ethos/gpucount.file")[1])
   numRunningGpus = len(filter(lambda a: a > 0, miner_hashes))
  
-  if (str(gDebugMode) == "1"):
-    DumpActivity("Gpus: " + str(numRunningGpus) + "/" + str(numGpus) + " - " + str(miner_hashes))
- 
   if (numRunningGpus != numGpus):
     DumpActivity("Rebooting (" + str(miner_hashes) + ")")
+    
     # todo: send optional request to external server to keep track of crashes
+    
+    # auto-update to the newest version of the script
+    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/master/check_crash.py")
+    
+    #reboot
     os.system("sudo reboot")
+    return 1
   else:
     time.sleep(15)
+
+    
