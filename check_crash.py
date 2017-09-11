@@ -51,7 +51,7 @@ while 1:
     
     #reboot
     os.system("sudo reboot")
-    return 1
+    break
   else:
     time.sleep(15)
 
