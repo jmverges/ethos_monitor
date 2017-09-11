@@ -95,12 +95,12 @@ def GetPanelInfo():
   gJsonSite = commandOutput[1]
   gJsonSite = gJsonSite+"/?json=yes"
 
-  commandOutput = commands.getstatusoutput("\grep hostname /var/run/ethos/stats.file")
+  commandOutput = commands.getstatusoutput("cat /etc/hostname")
   if (commandOutput[0] != 0):
-    DumpActivity("/var/run/ethos/stats.file is not avaible")
+    DumpActivity("can't read hostname from /etc/hostname")
     return 0
 
-  gRigName = commandOutput[1][9:]
+  gRigName = commandOutput[1]
 
   return 1
 
