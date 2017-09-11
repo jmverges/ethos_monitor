@@ -13,151 +13,40 @@
 # Contact: hiranmoy.iitkgp@gmail.com
 
 
-
+#!/usr/bin/python
 import os
 import sys
 import time
 import datetime
-import json
 import commands
-
-from urllib import urlopen
-
-
-
-gRigName = "-"
-gJsonSite = "-"
-gDebugMode = 0
-gGpuNotHashing = 0
+ 
+gDebugMode = 1
 gLogFile = "/home/ethos/gpu_crash.log"
-
-
-
-# ================================   functions  =============================
+gRigName = commands.getstatusoutput("cat /etc/hostname")[1]
+ 
 def DumpActivity(dumpStr):
   print dumpStr
-
-  try:
-    # writes input string in a file
     pLogFile = open(gLogFile, "a")
     pLogFile.write("%s @ %s\n" % (dumpStr, str(datetime.datetime.now())))
     pLogFile.close()
-  except:
-    print "File write error in - " + gLogFile
-
-
-
-# ============================== process arguments ============================
-def ProcessArguments(gotPanelInfo):
-  # arg#0: rig name (required if "/var/run/ethos/stats.file" not available)
-  # arg#1: json site (required if "/var/run/ethos/url.file" not available)
-  # "-debug" : (optional) set debug mode
-  global gRigName, gJsonSite, gDebugMode
-
-  if (gotPanelInfo != 1):
-    DumpActivity("Taking rig name and panel url from arguments")
-
-  argStr = ""
-
-  argIdx = 0
-  argProcessed = 0
-  while (1):
-    argIdx += 1
-    if (argIdx >= len(sys.argv)):
-      break
-
-    arg = sys.argv[argIdx]
-
-    if (str(arg) == "-debug"):
-      gDebugMode = 1
-      DumpActivity("debug mode")
-      continue
-
-    if (gotPanelInfo == 1):
-      DumpActivity("Ignoring argument : " + str(arg))
-      continue
-
-    argProcessed += 1
-    if (argProcessed == 1):
-      gRigName = arg
-    elif(argProcessed == 2):
-      gJsonSite = arg
-  
-
-def GetPanelInfo():
-  global gRigName, gJsonSite
-
-  commandOutput = commands.getstatusoutput('\grep http /var/run/ethos/url.file')
-  if (commandOutput[0] != 0):
-    DumpActivity("/var/run/ethos/url.file is not availble")
-    return 0
-
-  gJsonSite = commandOutput[1]
-  gJsonSite = gJsonSite+"/?json=yes"
-
-  commandOutput = commands.getstatusoutput("cat /etc/hostname")
-  if (commandOutput[0] != 0):
-    DumpActivity("can't read hostname from /etc/hostname")
-    return 0
-
-  gRigName = commandOutput[1]
-
-  return 1
-
-
-
-# ===================================   run  ================================
-success = GetPanelInfo()
-ProcessArguments(success)
-DumpActivity("Rig name: " + gRigName + ", Json: " + gJsonSite)
-
+ 
+ 
+# wait till 3 minutes runtime, so we can be sure that mining did start
+while( float(commands.getstatusoutput("cat /proc/uptime")[1].split()[0]) < 3 * 60):
+  time.sleep(5)
+ 
+# start checking
 while 1:
-  # wait for 4 min
-  time.sleep(15)
-
-  # read site content
-  try:
-    print("fetch panel stats")
-    url = urlopen(gJsonSite).read()
-  except:
-    DumpActivity("invalid url")
-    continue
-
-  # convert site content to json
-  try:
-    result = json.loads(url)
-  except:
-    DumpActivity("invalid json")
-    continue
-
-  # extract data
-  try:
-    numGpus = result["rigs"][gRigName]["gpus"]
-    numRunningGpus = result["rigs"][gRigName]["miner_instance"]
-    hashRate =  result["rigs"][gRigName]["miner_hashes"]
-    status = result["rigs"][gRigName]["condition"]
-  except:
-    DumpActivity("invalid rig name")
-    continue
-  print("...")
+  miner_hashes = map( float, commands.getstatusoutput("cat /var/run/ethos/miner_hashes.file")[1].split("\n")[-1].split() )
+  numGpus = int(commands.getstatusoutput("cat /var/run/ethos/gpucount.file")[1])
+  numRunningGpus = len(filter(lambda a: a > 0, miner_hashes))
+ 
   if (str(gDebugMode) == "1"):
-    DumpActivity("<" + status + "> Gpus: " + str(numRunningGpus) + "/" + str(numGpus) + " - " + str(hashRate))
-
-  if (status == "unreachable"):
-    gGpuNotHashing = 0
-    DumpActivity("[Warning] panel is not updating")
-    continue;
-
-  # check if any gpu is down
-  if (int(numRunningGpus) != int(numGpus)):
-    if (gGpuNotHashing == 1):
-      # reboot
-      DumpActivity("Rebooting (" + str(hashRate) + ")")
-      os.system("sudo reboot")
-    else:
-      # wait for another 2 min before rebooting
-      DumpActivity("One or more Gpu(s) might have crashed")
-      gGpuNotHashing = 1
+    DumpActivity("Gpus: " + str(numRunningGpus) + "/" + str(numGpus) + " - " + str(miner_hashes))
+ 
+  if (numRunningGpus != numGpus):
+    DumpActivity("Rebooting (" + str(miner_hashes) + ")")
+    # todo: send optional request to external server to keep track of crashes
+    os.system("sudo reboot")
   else:
-    # reset reboot pending counter
-    gGpuNotHashing = 0
+    time.sleep(15)
