@@ -50,7 +50,7 @@ while 1:
     os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/master/check_crash.py")
     
     #reboot
-    # os.system("sudo reboot")
+    os.system("sudo reboot")
     break
   else:
     time.sleep(15)
