@@ -39,7 +39,7 @@ while( float(commands.getstatusoutput("cat /proc/uptime")[1].split()[0]) < 3 * 6
 while 1:
   miner_hashes = map( float, commands.getstatusoutput("cat /var/run/ethos/miner_hashes.file")[1].split("\n")[-1].split() )
   numGpus = int(commands.getstatusoutput("cat /var/run/ethos/gpucount.file")[1])
-  numRunningGpus = len(filter(lambda a: a > 0, miner_hashes))
+  numRunningGpus = len(filter(lambda a: a > 20, miner_hashes))
  
   if (numRunningGpus != numGpus):
     DumpActivity("Rebooting (" + str(miner_hashes) + ")")
