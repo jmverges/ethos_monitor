@@ -50,8 +50,7 @@ while 1:
       
       # we wait 12 times to resolve these issues. this equals to 3 minutes. most likely appears with nicehash. 
       if (disconnectCount < 12):
-       DumpActivity("Waiting for hashes back: " + str(disconnectCount))
-       
+        DumpActivity("Waiting for hashes back: " + str(disconnectCount))       
         break
     else:
      disconnectCount = 0       
