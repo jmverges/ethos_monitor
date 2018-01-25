@@ -46,7 +46,7 @@ while 1:
  
   if (numRunningGpus != numGpus):
     
-    if (waitForReconnect == true AND numRunningGpus == 0):      
+    if (waitForReconnect == true and numRunningGpus == 0):      
       # all GPUs dead. propably TCP disconnect / pool issue
       # we wait 12 times to resolve these issues. this equals to 3 minutes. most likely appears with nicehash. 
       disconnectCount += 1            
