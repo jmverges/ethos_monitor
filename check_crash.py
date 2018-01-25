@@ -61,7 +61,7 @@ while 1:
     # todo: send optional request to external server to keep track of crashes
     
     # auto-update to the newest version of the script
-    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/master/check_crash.py")
+    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/44d2aa73968278a72e6d8023aaa10ccdd8b45bdc/check_crash.py")
     
     #reboot
     os.system("sudo reboot")
