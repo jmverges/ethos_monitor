@@ -24,6 +24,7 @@ gDebugMode = 1
 gLogFile = "/home/ethos/gpu_crash.log"
 gRigName = commands.getstatusoutput("cat /etc/hostname")[1]
 disconnectCount = 0
+waitForReconnect = true
 
 def DumpActivity(dumpStr):
   print dumpStr
@@ -44,11 +45,11 @@ while 1:
   numRunningGpus = len(filter(lambda a: a > 0, miner_hashes))
  
   if (numRunningGpus != numGpus):
-    if (numRunningGpus == 0):
+    
+    if (waitForReconnect == true && numRunningGpus == 0):      
       # all GPUs dead. propably TCP disconnect / pool issue
-      disconnectCount += 1
-      
       # we wait 12 times to resolve these issues. this equals to 3 minutes. most likely appears with nicehash. 
+      disconnectCount += 1            
       if (disconnectCount < 12):
         DumpActivity("Waiting for hashes back: " + str(disconnectCount))       
         break
@@ -60,7 +61,7 @@ while 1:
     # todo: send optional request to external server to keep track of crashes
     
     # auto-update to the newest version of the script
-    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/44d2aa73968278a72e6d8023aaa10ccdd8b45bdc/check_crash.py")
+    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/master/check_crash.py")
     
     #reboot
     os.system("sudo reboot")
