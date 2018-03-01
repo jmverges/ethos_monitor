@@ -12,9 +12,9 @@ close crontab
 
 if you want push notifications you can use pushsafer.com
 
-create a file /etc/ethos/pushsafer which only contains you apikey
+create a file /home/ethos/pushsafer which only contains you apikey
 
-create a file /etc/ethos/remote.url which only contains you public config url with HTTP, NOT HTTPS
+create a file /home/ethos/remote.url which only contains you public config url with HTTP, NOT HTTPS
 
 Add this line /home/ethos/ethos_utilities/autoupdate.sh in your custom.sh 
 

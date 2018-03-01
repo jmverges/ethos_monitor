@@ -11,7 +11,7 @@ import requests
 gDebugMode = 1
 gLogFile = "/home/ethos/gpu_crash.log"
 gRigName = commands.getstatusoutput("cat /etc/hostname")[1]
-gPrivateKey = commands.getstatusoutput("cat /etc/ethos/pushsafer")[1]
+gPrivateKey = commands.getstatusoutput("cat /home/ethos/pushsafer")[1]
 disconnectCount = 0
 waitForReconnect = 1
 
