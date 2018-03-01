@@ -1,28 +1,17 @@
 #!/usr/bin/python
 
-
-# -*- Python -*-
-
-#*****************************************************************
-#
-#
-# WARRANTY:
-# Use all material in this file at your own risk. Hiranmoy Basak
-# makes no claims about any material contained in this file.
-#
-# Contact: hiranmoy.iitkgp@gmail.com
-
-
-#!/usr/bin/python
 import os
 import sys
 import time
 import datetime
 import commands
- 
+import httplib
+import requests
+
 gDebugMode = 1
 gLogFile = "/home/ethos/gpu_crash.log"
 gRigName = commands.getstatusoutput("cat /etc/hostname")[1]
+gPrivateKey = commands.getstatusoutput("cat /etc/ethos/pushsafer")[1]
 disconnectCount = 0
 waitForReconnect = 1
 
@@ -52,16 +41,32 @@ while 1:
       disconnectCount += 1            
       if (disconnectCount < 12):
         DumpActivity("Waiting for hashes back: " + str(disconnectCount))       
-        break
+        time.sleep(15)
     else:
      disconnectCount = 0       
     
     DumpActivity("Rebooting (" + str(miner_hashes) + ")")
-    
-    # todo: send optional request to external server to keep track of crashes
-    
+
+    if gPrivateKey:
+        url = 'https://www.pushsafer.com/api' # URL de destination
+        post_fields = {
+              "t" : "RIG: " + gRigName + " rebooting", # Titre de la notification
+              "m" : "Your rig : " + gRigName + " rebooting due to low HashRate: " + str(miner_hashes) + ".", # Message (corp) de la notification
+              "s" : "",
+              "v" : "",
+              "i" : "37",
+              "c" : "",
+              "d" : "a",
+              "u" : "https://verges.ethosdistro.com/graphs/?rig=" + gRigName + "&type=miner_hashes", # URL pour Android & IOS
+              "ut" : "Open graphs link", # Titre de l'URL
+              "k" : gPrivateKey
+              } # Private key qui doit etre rensigne ligne 38
+
+        result = requests.post(url, data=post_fields)
+        DumpActivity(result)
+
     # auto-update to the newest version of the script
-    os.system("curl -O https://raw.githubusercontent.com/krtschmr/ethos_monitor/master/check_crash.py")
+    os.system("curl -O https://raw.githubusercontent.com/jmverges/ethos_utilities/master/check_crash.py")
     
     #reboot
     os.system("sudo reboot")
