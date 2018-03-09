@@ -4,7 +4,7 @@
 $your_config_url = file_get_contents('/home/ethos/remote.url');
 
 //TIME TO CHECK - IN SECONDS
-$time_check = 360;
+$time_check = 180;
 
 //ROUTE TO SAVE LENGTH
 $LOCAL_CONF = '/home/ethos/length.txt';
