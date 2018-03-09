@@ -71,7 +71,9 @@ while 1:
 
     DumpActivity("Rebooting (" + str(miner_hashes) + ")")
     #reboot
+    os.system("clear-thermals")
     os.system("sudo reboot")
+    
     break
   else:
     time.sleep(15)
