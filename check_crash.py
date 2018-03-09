@@ -67,6 +67,7 @@ while 1:
 
     DumpActivity("Updating to last version of the script")
     # auto-update to the newest version of the script
+    os.system("git pull")
     os.system("curl -O https://raw.githubusercontent.com/jmverges/ethos_utilities/master/check_crash.py")
 
     DumpActivity("Rebooting (" + str(miner_hashes) + ")")
