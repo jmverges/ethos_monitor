@@ -23,7 +23,7 @@ def DumpActivity(dumpStr):
  
  
 # wait till 3 minutes runtime, so we can be sure that mining did start
-while( float(commands.getstatusoutput("cat /proc/uptime")[1].split()[0]) < 3 * 60):
+while( float(commands.getstatusoutput("cat /proc/uptime")[1].split()[0]) < 4 * 60):
   time.sleep(5)
  
 # start checking
